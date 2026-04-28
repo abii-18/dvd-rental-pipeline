@@ -21,12 +21,6 @@ A daily ETL pipeline built on PostgreSQL's DVD rental dataset. Extracts rental a
 
 # 3.Pipeline
 
-
-extract → transform → upload_to_s3 → load_to_warehouse
-
-
-## Pipeline
-
 extract → transform → upload → load_to_postgres
 
 ### Steps
@@ -68,3 +62,5 @@ Open `http://localhost:8080` → trigger `dvd_rental_pipeline`
 
 ---
 
+## 6.Dag Output
+![DAG Output](screenshots/dag_output.png)
