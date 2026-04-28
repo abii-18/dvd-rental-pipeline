@@ -63,4 +63,5 @@ Open `http://localhost:8080` → trigger `dvd_rental_pipeline`
 ---
 
 ## 6.Dag Output
-![DAG Output](screenshots/dag_output.png)
+
+![DAG Output](screenshots/Dag_final.png)
