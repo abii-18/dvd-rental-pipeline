@@ -25,11 +25,16 @@ A daily ETL pipeline built on PostgreSQL's DVD rental dataset. Extracts rental a
 extract → transform → upload_to_s3 → load_to_warehouse
 
 
-Step       -    What it does
-Extract    -    Joins 5 tables, pulls 14K+ rows to CSV 
-Transform  -    Drops dupes, fixes types, flags late returns & unpaid rentals 
-Upload     -    Pushes cleaned CSV to S3 with date partitioning 
-Load       -    Downloads from S3, bulk loads via COPY into warehouse 
+## Pipeline
+
+extract → transform → upload → load_to_postgres
+
+### Steps
+
+- **Extract** → Joins 5 tables, pulls 14K+ rows to CSV  
+- **Transform** → Cleans data, fixes types, flags late returns & unpaid rentals  
+- **Upload** → Pushes cleaned CSV to S3 with date partitioning  
+- **Load** → Downloads from S3, bulk loads via COPY into warehouse  
 
 ---
 
