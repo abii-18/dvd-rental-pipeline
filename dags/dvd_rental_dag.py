@@ -21,31 +21,37 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
-# S3 bucket for storing processed data
 BUCKET_NAME = "abinav-dvdrental-bucket1"
 
 
 def extract_task(**context):
-    # Run extract step for given execution date
     return run_extract(context["ds"])
 
 
 def transform_task(**context):
-    # Run transformation on extracted data
-    return run_pipeline(context["ds"])
+    # run transform
+    output = run_pipeline(context["ds"])
+    return output
 
 
 def upload_task(**context):
-    # Upload transformed file to S3 (date-partitioned)
     ti = context["ti"]
     file_path = ti.xcom_pull(task_ids="transform")
+
+    # skip if no data
+    if not file_path or not os.path.exists(file_path):
+        return None
+
     return upload_to_s3(file_path, context["ds"])
 
 
 def load_to_postgres(**context):
-    # Download processed file from S3 and load into Postgres warehouse
     ti = context["ti"]
     file_path = ti.xcom_pull(task_ids="transform")
+
+    # skip if no data
+    if not file_path or not os.path.exists(file_path):
+        return None
 
     filename = os.path.basename(file_path)
     s3_key = f"dvd_rentals/date={context['ds']}/{filename}"
@@ -55,7 +61,6 @@ def load_to_postgres(**context):
     s3 = boto3.client("s3")
     s3.download_file(BUCKET_NAME, s3_key, local_download_path)
 
-    # Load data into warehouse table using COPY
     conn = psycopg2.connect(
         host="host.docker.internal",
         port=5432,
@@ -77,7 +82,6 @@ def load_to_postgres(**context):
     conn.close()
 
 
-# Define DAG and task execution order
 with DAG(
     dag_id="dvd_rental_pipeline",
     default_args=default_args,
